@@ -4,6 +4,8 @@ var PosMachineController = {
     secondHalfPromotionItems:null,
     cartItems:null,
     resourcePath:"",
+    readFinished:4,
+    canCalculate:false,
     getPath:function(){
        var js=document.scripts;
        var jsPath;
@@ -14,27 +16,40 @@ var PosMachineController = {
        }
        return jsPath + PosMachineController.resourcePath;
     },
-    loadList:function(){
+    isFinishedReadInput:function( callBack ){
+        this.readFinished --;
+        if( this.readFinished === 0 ){
+            this.canCalculate = true;
+            callBack( true );
+        }else{
+            callBack( false );
+        }
+    },
+    loadList:function( callBack ){
         var path = this.getPath();
 
         $.get( path + "itemlist.txt",function(data){
-            var commodityParser = new CommodityParser();
-            PosMachineController.commodityItems = commodityParser.parse( data.split("\n") );
-        });
+              var commodityParser = new CommodityParser();
+              PosMachineController.commodityItems = commodityParser.parse( data.split("\n") );
+              PosMachineController.isFinishedReadInput( callBack );
+         });
 
         $.get( path + "discount_promotion.txt",function(data){
-            var discountPromotionParser = new DiscountPromotionParser();
-            PosMachineController.discountPromotionItems = discountPromotionParser.parse( data.split("\n") );
+              var discountPromotionParser = new DiscountPromotionParser();
+              PosMachineController.discountPromotionItems = discountPromotionParser.parse( data.split("\n") );
+              PosMachineController.isFinishedReadInput( callBack );
         });
 
         $.get( path + "second_half_price_promotion.txt",function(data){
-            var secondHalfPromotionParser = new SecondHalfPromotionParser();
-            PosMachineController.secondHalfPromotionItems = secondHalfPromotionParser.parse( data.split("\n") );
+              var secondHalfPromotionParser = new SecondHalfPromotionParser();
+              PosMachineController.secondHalfPromotionItems = secondHalfPromotionParser.parse( data.split("\n") );
+              PosMachineController.isFinishedReadInput( callBack );
         });
 
         $.get( path + "cart.txt",function(data){
-            var cartParser = new CartParser();
-            PosMachineController.cartItems = cartParser.parse( data.split("\n") );
+               var cartParser = new CartParser();
+               PosMachineController.cartItems = cartParser.parse( data.split("\n") );
+               PosMachineController.isFinishedReadInput( callBack );
         });
 
 

@@ -7,6 +7,11 @@
     margin:10px 30px 10px 30px;
     border-radius:10px;
     border:0px;
+
+}
+
+#page_index .calculateBtn{
+    background-color:#E7E7E7;
 }
 
 #page_index .list,.calculateResult{

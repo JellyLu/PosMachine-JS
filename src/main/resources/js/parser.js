@@ -27,6 +27,11 @@ Parser.prototype = {
            this.validateInput( input[i] );
            list.push( this.parseLine( input[i] ) );
         }
+//        input.forEach( function( line){
+//            console.log( me );
+//            this.validateInput( line );
+//            list.push( Parser.parseLine( line ) );
+//        });
         return list;
     },
     validateInput:function( line ){
