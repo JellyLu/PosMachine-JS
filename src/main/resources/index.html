@@ -2,16 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script type="text/javascript" src="./js/parser.js"></script>
-    <script type="text/javascript" src="./js/promotionstrategy.js"></script>
-    <script type="text/javascript" src="./js/posmachine.js"></script>
+    <link href="./index.css" rel="stylesheet">
     <script src="jquery/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="./js/parser.js"></script>
+    <script type="text/javascript" src="./js/map.js"></script>
+    <script type="text/javascript" src="./js/PromotionStrategy.js"></script>
+    <script type="text/javascript" src="./js/PosMachine.js"></script>
+    <script type="text/javascript" src="./js/PosMachineController.js"></script>
+
     <title>Title</title>
 </head>
-<body>
-    <input type="button" class="loadListBtn" name="loadList" onclick="javascript:page_index.loadList();">loadList</input>
+<body id="page_index">
+    <input type="button" class="button loadListBtn" value="loadList" onclick="javascript:page_index.loadList();" />
+    <input type="button" class="button showListBtn" value="showList" onclick="javascript:page_index.showList();" />
     <div class="list"></div>
-    <input type="button" class="calculateBtn"  onclick="javascript:page_index.consume();">consume</input>
+    <input type="button" class="button calculateBtn" value="consume"  onclick="javascript:page_index.consume();" />
     <div class="calculateResult">
         <span>result:</span>
         <span class="result"></span>

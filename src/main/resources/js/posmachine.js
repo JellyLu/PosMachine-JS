@@ -3,7 +3,7 @@ var CalculatePrice = {
     setPromotions:function( promotions ){
         this.promotions = promotions;
     },
-    getCommodityPrice( originPrice, quantity ){
+    getCommodityPrice:function( originPrice, quantity ){
         var resultPrice = originPrice*quantity;
         if( this.promotions ){
             this.promotions.forEach( function( promotion ){
@@ -13,8 +13,7 @@ var CalculatePrice = {
         }
         return resultPrice;
     }
-}
-
+};
 
 var PosMachine = function( commodityItems, discountPromotionItems,  secondHalfPromotionItems ){
      this.commodityItems = commodityItems;
@@ -24,105 +23,55 @@ var PosMachine = function( commodityItems, discountPromotionItems,  secondHalfPr
 };
 
 PosMachine.prototype = {
-    promotionMap:{},
+    promotionMap:new HashMap(),
     setPromotionMap:function(){
        this.addDiscountPromotionToMap();
        this.addSecondHalfPromotionToMap();
     },
     addDiscountPromotionToMap:function(){
         if( this.discountPromotionItems && this.discountPromotionItems.length > 0 ){
-            this.discountPromotionItems.forEach( function( discountPromotionItem ){
-                var promotionList = promotionMap[discountPromotionItem["barcode"]];
-                promotionList.push( new DiscountPromotion( discountPromotionItem));
-                promotionMap[discountPromotionItem["barcode"]] = promotionList;
-            });
+            for( var i = 0, len = this.discountPromotionItems.length; i < len; ++i ){
+                var discountPromotionItem = this.discountPromotionItems[i];
+                var promotionList = this.promotionMap.get( discountPromotionItem["barcode"] )?this.promotionMap.get( discountPromotionItem["barcode"] ):new Array();
+                promotionList.push( new DisCountPromotion( discountPromotionItem["discount"] ) );
+                this.promotionMap.put( discountPromotionItem["barcode"], promotionList);
+            };
         }
     },
     addSecondHalfPromotionToMap:function(){
         if( this.secondHalfPromotionItems && this.secondHalfPromotionItems.length > 0 ){
-            this.secondHalfPromotionItems.forEach( function( secondHalfPromotionItem ){
-                var promotionList = promotionMap[secondHalfPromotionItem["barcode"]];
+            for( var i = 0, len = this.secondHalfPromotionItems.length; i < len; ++i ){
+                var secondHalfPromotionItem = this.secondHalfPromotionItems[i];
+                var promotionList = this.promotionMap.get( secondHalfPromotionItem["barcode"] )?this.promotionMap.get( secondHalfPromotionItem["barcode"] ):new Array();
                 promotionList.push( new SecondHalfPromotion());
-                promotionMap[secondHalfPromotionItem["barcode"]] = promotionList;
-            });
+               this. promotionMap.put( secondHalfPromotionItem["barcode"], promotionList );
+            }
         }
     },
     calculate:function( cartItems ){
-        console.log( cartItems );
         var total = 0.00;
-        for( var i = 0, len = cartItems.length; i < len; ++i ){
-            total += this.calculateSubtotal( cartItem[i] );
+        if( cartItems ){
+            for( var i = 0, len = cartItems.length; i < len; ++i ){
+                total += this.calculateSubtotal( cartItems[i] );
+            }
         }
         return total;
     },
     calculateSubtotal:function( cartItem ){
         var barcode = cartItem["barcode"];
-        var calculatePrice = new CalculatePrice();
-        cartItem.setPromotions( this.promotionMap[barcode] );
-        return calculatePrice.getCommodityPrice( this.queryItemPrice( barcode ), cartItem["quantity"] );
+        CalculatePrice.setPromotions( this.promotionMap.get(barcode) );
+        var originPrice = this.queryItemPrice( barcode );
+        return CalculatePrice.getCommodityPrice( originPrice, cartItem["quantity"] );
     },
     queryItemPrice:function( barcode ){
-        this.commodityItems.forEach( function( commodityItem ){
-            if( commodityItem["barcode"].equal( barcode ) ){
+        for( var i = 0, len = this.commodityItems.length; i < len; ++i ){
+            var commodityItem = this.commodityItems[i];
+            if( commodityItem["barcode"] ==  barcode  ){
                 return commodityItem["price"];
             }
-        });
-    }
-}
-
-var PosMachineController = function( resourcePath ){ this.resourcePath = resourcePath; }
-
-PosMachineController.prototype = {
-    commodityItems:null,
-    discountPromotionItems:null,
-    secondHalfPromotionItems:null,
-    cartItems:null,
-    getPath:function(){
-       var js=document.scripts;
-       var jsPath;
-       for(var i=js.length;i>0;i--){
-        if(js[i-1].src.indexOf("posmachine.js")>-1){
-          jsPath=js[i-1].src.substring(0,js[i-1].src.lastIndexOf("/")-2);
         }
-       }
-       return jsPath + this.resourcePath;
-    },
-    loadList:function(){
-        var content = "";
-        var path = this.getPath();
-
-        $.get( path + "itemlist.txt",function(data){
-            var commodityParser = new CommodityParser();
-            this.commodityItems = commodityParser.parse( data.split("\n") );
-            console.log( "com:" + JSON.stringify( this.commodityItems ));
-        });
-
-        $.get( path + "discount_promotion.txt",function(data){
-            var discountPromotionParser = new DiscountPromotionParser();
-            this.discountPromotionItems = discountPromotionParser.parse( data.split("\n") );
-            console.log( "dis:" + JSON.stringify( this.discountPromotionItems ));
-        });
-
-        $.get( path + "second_half_price_promotion.txt",function(data){
-            var secondHalfPromotionParser = new SecondHalfPromotionParser();
-            this.secondHalfPromotionItems = secondHalfPromotionParser.parse( data.split("\n") );
-            console.log( "sec:" + JSON.stringify( this.secondHalfPromotionItems ));
-        });
-
-        $.get( path + "cart.txt",function(data){
-            var cartParser = new CartParser();
-            this.cartItems = cartParser.parse( data.split("\n") );
-            console.log( "cart:" + JSON.stringify( this.cartItems ));
-        });
-
-
-    },
-    consume:function(){
-        var posMachine = new PosMachine( this.commodityItems, this.discountPromotionItems, this.secondHalfPromotionItems );
-        var totalConsume = posMachine.calculate( this.cartItems );
-        console.log( "totol consume:" + totalConsume );
-        return totalConsume;
     }
-
 };
+
+
 

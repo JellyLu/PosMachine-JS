@@ -1,0 +1,16 @@
+#page_index .button{
+    width:100px;
+    height:40px;
+    background-color:#317EE7;
+    color:white;
+    font-size:14pt;
+    margin:10px 30px 10px 30px;
+    border-radius:10px;
+    border:0px;
+}
+
+#page_index .list,.calculateResult{
+     width:80%;
+     padding:20px 10% 20px 10%;
+     background-color:#CCECF3;
+}

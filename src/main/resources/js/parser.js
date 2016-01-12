@@ -24,25 +24,19 @@ Parser.prototype = {
     parse:function( input ){
         var list = [];
         for( var i = 0, len = input.length; i < len; ++i ){
-           console.log( input[i] );
            this.validateInput( input[i] );
            list.push( this.parseLine( input[i] ) );
         }
-//        input.forEach( function( line){
-//            console.log( me );
-//            validateInput( line );
-//            list.push( Parser.parseLine( line ) );
-//        });
         return list;
     },
     validateInput:function( line ){
         try{
-            var isPattern = this.getPattern().test(line);
-            if( isPattern ){
-                 throw "invalid input format";
+          var isPattern = this.getPattern().test(line);
+            if( !isPattern ){
+                throw "invalid input format";
             }
         }catch( err ){
-           // alert( err );
+            alert( err );
         }
     },
     parseLine:function( line ){
@@ -55,7 +49,7 @@ Parser.prototype = {
 
 var CommodityParser = function(){}
 CommodityParser.prototype = new Parser();
-CommodityParser.prototype.PATTERN = /^(\\w+):(\\d+)$/;
+CommodityParser.prototype.PATTERN = /^(\w+):(\d+)$/;
 CommodityParser.prototype.parseLine = function( line ){
                                          var barcode = line.split(":")[0];
                                          var price = line.split(":")[1];
@@ -66,7 +60,7 @@ CommodityParser.prototype.parseLine = function( line ){
 
 var DiscountPromotionParser = function(){}
 DiscountPromotionParser.prototype = new Parser();
-DiscountPromotionParser.prototype.PATTERN = /^(\\w+):(\\d+)$/;
+DiscountPromotionParser.prototype.PATTERN = /^(\w+):(\d+)$/;
 DiscountPromotionParser.prototype.parseLine = function( line ){
                                                    var barcode = line.split(":")[0];
                                                    var discount = line.split(":")[1];

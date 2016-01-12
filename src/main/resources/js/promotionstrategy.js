@@ -18,13 +18,13 @@ var DisCountPromotion = function( discount ){
 
 DisCountPromotion.prototype = new Promotion();
 DisCountPromotion.prototype.getPrice = function( originPrice, quantity ){
-                                            return originPrice*( 100 - discount )*quantity/100;
+                                            return originPrice*( 100 - this.discount )*quantity/100;
                                        }
 
 var SecondHalfPromotion = function(){}
 SecondHalfPromotion.prototype = new Promotion();
 SecondHalfPromotion.prototype.getPrice = function( originPrice, quantity ){
-                                             var halfQuantity = quantity/2;
+                                             var halfQuantity = parseInt(quantity/2);
                                              return originPrice/2*halfQuantity;
-                                        }
+                                         }
 
