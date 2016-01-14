@@ -25,35 +25,34 @@ var PosMachine = function( commodityItems, discountPromotionItems,  secondHalfPr
 PosMachine.prototype = {
     promotionMap:new HashMap(),
     setPromotionMap:function(){
+       this.promotionMap = new HashMap();
        this.addDiscountPromotionToMap();
        this.addSecondHalfPromotionToMap();
     },
     addDiscountPromotionToMap:function(){
         if( this.discountPromotionItems && this.discountPromotionItems.length > 0 ){
-            for( var i = 0, len = this.discountPromotionItems.length; i < len; ++i ){
-                var discountPromotionItem = this.discountPromotionItems[i];
+            this.discountPromotionItems.forEach( function( discountPromotionItem ){
                 var promotionList = this.promotionMap.get( discountPromotionItem["barcode"] )?this.promotionMap.get( discountPromotionItem["barcode"] ):new Array();
                 promotionList.push( new DisCountPromotion( discountPromotionItem["discount"] ) );
                 this.promotionMap.put( discountPromotionItem["barcode"], promotionList);
-            };
+            }, this);
         }
     },
     addSecondHalfPromotionToMap:function(){
         if( this.secondHalfPromotionItems && this.secondHalfPromotionItems.length > 0 ){
-            for( var i = 0, len = this.secondHalfPromotionItems.length; i < len; ++i ){
-                var secondHalfPromotionItem = this.secondHalfPromotionItems[i];
+            this.secondHalfPromotionItems.forEach( function( secondHalfPromotionItem ) {
                 var promotionList = this.promotionMap.get( secondHalfPromotionItem["barcode"] )?this.promotionMap.get( secondHalfPromotionItem["barcode"] ):new Array();
                 promotionList.push( new SecondHalfPromotion());
-               this. promotionMap.put( secondHalfPromotionItem["barcode"], promotionList );
-            }
+                this. promotionMap.put( secondHalfPromotionItem["barcode"], promotionList );
+            }, this );
         }
     },
     calculate:function( cartItems ){
         var total = 0.00;
         if( cartItems ){
-            for( var i = 0, len = cartItems.length; i < len; ++i ){
-                total += this.calculateSubtotal( cartItems[i] );
-            }
+            cartItems.forEach( function( cartItem ){
+                total += this.calculateSubtotal( cartItem );
+            }, this );
         }
         return total;
     },
@@ -64,12 +63,14 @@ PosMachine.prototype = {
         return CalculatePrice.getCommodityPrice( originPrice, cartItem["quantity"] );
     },
     queryItemPrice:function( barcode ){
-        for( var i = 0, len = this.commodityItems.length; i < len; ++i ){
-            var commodityItem = this.commodityItems[i];
+        var price = 0.0;
+        this.commodityItems.forEach( function( commodityItem ){
             if( commodityItem["barcode"] ==  barcode  ){
-                return commodityItem["price"];
+                price = commodityItem["price"];
+                return;
             }
-        }
+        });
+        return price;
     }
 };
 

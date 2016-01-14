@@ -23,21 +23,17 @@ Parser.prototype = {
     PATTERN:/.*/,
     parse:function( input ){
         var list = [];
-        for( var i = 0, len = input.length; i < len; ++i ){
-           this.validateInput( input[i] );
-           list.push( this.parseLine( input[i] ) );
-        }
-//        input.forEach( function( line){
-//            console.log( me );
-//            this.validateInput( line );
-//            list.push( Parser.parseLine( line ) );
-//        });
+        input.forEach( function( line){
+            this.validateInput( line );
+            list.push( this.parseLine( line ) );
+        }, this);
         return list;
     },
     validateInput:function( line ){
         try{
           var isPattern = this.getPattern().test(line);
             if( !isPattern ){
+                console.log( this.getPattern() + " " + isPattern + " " + line);
                 throw "invalid input format";
             }
         }catch( err ){
@@ -45,7 +41,7 @@ Parser.prototype = {
         }
     },
     parseLine:function( line ){
-
+        return line;
     },
     getPattern:function(){
         return this.PATTERN;
@@ -54,10 +50,10 @@ Parser.prototype = {
 
 var CommodityParser = function(){}
 CommodityParser.prototype = new Parser();
-CommodityParser.prototype.PATTERN = /^(\w+):(\d+)$/;
+CommodityParser.prototype.PATTERN = /^(\w+):(\d+[.]*\d+)$/;
 CommodityParser.prototype.parseLine = function( line ){
                                          var barcode = line.split(":")[0];
-                                         var price = line.split(":")[1];
+                                         var price = parseFloat( line.split(":")[1] );
                                          return new CommodityItem( barcode, price );
                                       };
 
@@ -68,20 +64,20 @@ DiscountPromotionParser.prototype = new Parser();
 DiscountPromotionParser.prototype.PATTERN = /^(\w+):(\d+)$/;
 DiscountPromotionParser.prototype.parseLine = function( line ){
                                                    var barcode = line.split(":")[0];
-                                                   var discount = line.split(":")[1];
+                                                   var discount = parseInt( line.split(":")[1] );
                                                    return new DiscountPromotionItem( barcode, discount );
                                                };
 
 var SecondHalfPromotionParser = function(){}
 SecondHalfPromotionParser.prototype = new Parser();
 SecondHalfPromotionParser.prototype.PATTERN = /[A-Za-z0-9]+/;
-SecondHalfPromotionParser.prototype.parseLine = function( line ){ return new DiscountPromotionItem( line ); };
+SecondHalfPromotionParser.prototype.parseLine = function( line ){ return new SecondHalfPromotionItem( line ); };
 
 var CartParser = function(){}
 CartParser.prototype = new Parser();
 CartParser.prototype.PATTERN = /^(\w+)-(\d+)$/;
 CartParser.prototype.parseLine = function( line ){
                                      var barcode = line.split("-")[0];
-                                     var quantity = line.split("-")[1];
+                                     var quantity = parseInt( line.split("-")[1] );
                                      return new CartItem( barcode, quantity );
                                   };

@@ -7,12 +7,12 @@ var PosMachineController = {
     readFinished:4,
     canCalculate:false,
     getPath:function(){
-       var js=document.scripts;
+       var js = document.scripts;
        var jsPath;
-       for(var i=js.length;i>0;i--){
-        if(js[i-1].src.indexOf("PosMachineController.js")>-1){
-          jsPath=js[i-1].src.substring(0,js[i-1].src.lastIndexOf("/")-2);
-        }
+       for(var i = js.length; i>0; i--){
+           if( js[i-1].src.indexOf( "PosMachineController.js" ) >- 1 ){
+                jsPath = js[i-1].src.substring( 0, js[i-1].src.lastIndexOf( "/" ) - 2 );
+           }
        }
        return jsPath + PosMachineController.resourcePath;
     },
